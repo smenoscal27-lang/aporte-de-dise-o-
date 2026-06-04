@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turnos Barbería & Salón</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="welcomeModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content glass">
+      <button class="modal-close" id="closeWelcome">&times;</button>
+      <div class="modal-header">
+        <svg class="modal-logo" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle cx="40" cy="40" r="35" fill="url(#logoGrad2)" opacity="0.9"/>
+          <circle cx="40" cy="40" r="35" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+          <line x1="35" y1="15" x2="35" y2="65" stroke="#E31937" stroke-width="2.5"/>
+          <line x1="40" y1="15" x2="40" y2="65" stroke="#fff" stroke-width="2.5"/>
+          <line x1="45" y1="15" x2="45" y2="65" stroke="#0033A0" stroke-width="2.5"/>
+          <circle cx="30" cy="35" r="3.5" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="50" cy="35" r="3.5" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+          <path d="M 30 35 Q 35 32 40 35 Q 35 38 30 35" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <path d="M 50 35 Q 45 32 40 35 Q 45 38 50 35" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <circle cx="28" cy="28" r="8" fill="#fff" opacity="0.2"/>
+        </svg>
+      </div>
+      <h2>Bienvenido a SGCUT</h2>
+      <p class="modal-intro">Tu plataforma profesional para gestión de turnos en salones de belleza y barberías.</p>
+      
+      <div class="modal-features">
+        <div class="feature-item">
+          <span class="feature-icon">📅</span>
+          <h4>Gestión de Turnos</h4>
+          <p>Agenda eficiente con calendario interactivo y reserva de horarios en tiempo real.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">💼</span>
+          <h4>Panel Administrativo</h4>
+              <p>Control total de citas, barberos y reportes mensuales exportables a PDF.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📊</span>
+          <h4>Historial Digital</h4>
+          <p>Registro completo de servicios completados para auditoría y seguimiento.</p>
+        </div>
+      </div>
+      
+      <button class="btn-primary" id="startBtn">Comenzar</button>
+    </div>
+  </div>
+
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card glass">
+      <div class="login-brand">
+        <svg class="brand-logo" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle cx="40" cy="40" r="35" fill="url(#logoGrad)" opacity="0.9"/>
+          <circle cx="40" cy="40" r="35" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+          <!-- Barbershop pole stripes -->
+          <line x1="35" y1="15" x2="35" y2="65" stroke="#E31937" stroke-width="2.5"/>
+          <line x1="40" y1="15" x2="40" y2="65" stroke="#fff" stroke-width="2.5"/>
+          <line x1="45" y1="15" x2="45" y2="65" stroke="#0033A0" stroke-width="2.5"/>
+          <!-- Scissors -->
+          <circle cx="30" cy="35" r="3.5" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="50" cy="35" r="3.5" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+          <path d="M 30 35 Q 35 32 40 35 Q 35 38 30 35" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <path d="M 50 35 Q 45 32 40 35 Q 45 38 50 35" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <!-- Professional shine -->
+          <circle cx="28" cy="28" r="8" fill="#fff" opacity="0.2"/>
+        </svg>
+        <div>
+          <h1>SGCUT</h1>
+          <p>Elite Salon Management</p>
+        </div>
+      </div>
+
+      <p class="login-note">Inicia sesión o regístrate para reservar turnos. Admin: usuario <code>admin</code>.</p>
+      <p id="serverStatus" class="server-status">Conectando con el servidor...</p>
+      <div id="authFeedback" class="auth-feedback hidden"></div>
+
+      <div class="auth-tabs">
+        <button type="button" id="tabLogin" class="auth-tab active">Iniciar sesión</button>
+        <button type="button" id="tabRegister" class="auth-tab">Registrarse</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label for="loginUsername">Teléfono o usuario admin</label>
+        <input type="text" id="loginUsername" placeholder="Teléfono o admin" autocomplete="username" required />
+
+        <label for="loginPassword">Contraseña</label>
+        <input type="password" id="loginPassword" placeholder="contraseña" required />
+
+        <button type="submit" class="btn-primary">Entrar</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <label for="regName">Nombre completo</label>
+        <input type="text" id="regName" placeholder="Tu nombre" required />
+
+        <label for="regPhone">Número de teléfono</label>
+        <input type="tel" id="regPhone" placeholder="10 u 11 dígitos" maxlength="11" inputmode="numeric" required />
+
+        <label for="regPassword">Contraseña</label>
+        <input type="password" id="regPassword" placeholder="Mínimo 4 caracteres" minlength="4" required />
+
+        <button type="submit" class="btn-primary">Registrarse y entrar</button>
+        <p class="small-note">Tus datos quedan registrados de forma segura. Solo el administrador gestiona los reportes.</p>
+      </form>
+
+    </div>
+  </div>
+
+  <div id="appScreen" class="app-screen hidden">
+    <nav class="sidebar glass">
+      <div class="sidebar-brand">
+        <svg class="brand-logo-small" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle cx="40" cy="40" r="35" fill="url(#logoGrad3)" opacity="0.9"/>
+          <circle cx="40" cy="40" r="35" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+          <line x1="35" y1="15" x2="35" y2="65" stroke="#E31937" stroke-width="2.5"/>
+          <line x1="40" y1="15" x2="40" y2="65" stroke="#fff" stroke-width="2.5"/>
+          <line x1="45" y1="15" x2="45" y2="65" stroke="#0033A0" stroke-width="2.5"/>
+          <circle cx="30" cy="35" r="3.5" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="50" cy="35" r="3.5" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+          <path d="M 30 35 Q 35 32 40 35 Q 35 38 30 35" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <path d="M 50 35 Q 45 32 40 35 Q 45 38 50 35" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <circle cx="28" cy="28" r="8" fill="#fff" opacity="0.2"/>
+        </svg>
+        <div>
+          <h1>SGCUT</h1>
+          <p>Elite Salon Management</p>
+        </div>
+      </div>
+
+      <div class="nav-menu">
+        <button id="btn-dashboard" class="nav-btn active-tab" type="button">Dashboard</button>
+        <button id="btn-registro" class="nav-btn" type="button">Agendar Cita</button>
+        <button id="btn-gestion" class="nav-btn" type="button">Turnos Activos</button>
+        <button id="btn-historial" class="nav-btn" type="button">Historial Mensual</button>
+        <button id="btn-config" class="nav-btn" type="button">Configuración</button>
+
+        <div class="nav-divider"></div>
+
+        <button id="btn-about" class="nav-btn" type="button">Quiénes Somos</button>
+        <button id="btn-howto" class="nav-btn" type="button">Cómo Usar</button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-card glass">
+          <span id="userBadge">USER</span>
+          <div>
+            <p id="userName" class="user-name">Invitado</p>
+            <p id="userRole" class="user-role">Rol</p>
+          </div>
+        </div>
+        <button id="logoutBtn" class="btn-secondary">Cerrar sesión</button>
+      </div>
+    </nav>
+
+    <main class="main-panel">
+      <section id="view-dashboard" class="view">
+        <header class="page-header">
+          <h2>Panel de Control</h2>
+          <p>Resumen de turnos y agenda mensual, sin registro de costo en el sistema.</p>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="glass dashboard-card">
+            <p class="stat-label">Citas del mes</p>
+            <h3 id="stats-total">0</h3>
+          </div>
+          <div class="glass dashboard-card">
+            <p class="stat-label">Citas completadas</p>
+            <h3 id="stats-caja">0</h3>
+          </div>
+        </div>
+
+        <div class="glass note-card">
+          <h3>Agenda física, control digital</h3>
+          <ul>
+            <li>Registra turnos y horarios reales.</li>
+            <li>El local atiende todos los días; elige la fecha en el calendario.</li>
+            <li>Estado de turnos pendiente/completado para llevar mejor control.</li>
+          </ul>
+        </div>
+
+        <div class="glass calendar-card">
+          <div class="calendar-header">
+            <h3>Calendario</h3>
+            <span id="currentMonth">Mayo 2026</span>
+          </div>
+          <div id="calendarGrid" class="calendar-grid"></div>
+        </div>
+      </section>
+
+      <section id="view-registro" class="view hidden">
+        <header class="page-header">
+          <h2>Agendar Cita</h2>
+          <p>Registra un servicio rápido con fecha y hora; el pago se confirma en el local.</p>
+        </header>
+
+        <form id="bookingForm" class="glass form-card">
+          <div class="form-row">
+            <label for="clientName">Nombre completo</label>
+            <input type="text" id="clientName" placeholder="Tu nombre" required />
+          </div>
+
+          <div class="form-row">
+            <label for="clientPhone">Teléfono</label>
+            <input type="tel" id="clientPhone" placeholder="Tu teléfono" readonly />
+          </div>
+
+          <div class="form-row">
+            <label for="serviceSelect">Servicio</label>
+            <select id="serviceSelect" required></select>
+          </div>
+
+          <div class="form-row">
+            <label for="barberSelect">Barbero</label>
+            <select id="barberSelect" required>
+              <option value="">Selecciona un barbero</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <p class="help-text">El pago se confirma en el local al momento del servicio. Aquí se lleva la agenda física y los turnos.</p>
+          </div>
+
+          <div class="two-col-row">
+            <div class="form-row">
+              <label for="appointmentDate">Fecha</label>
+              <input type="date" id="appointmentDate" required />
+            </div>
+            <div class="form-row">
+              <label for="periodSelect">Periodo</label>
+              <select id="periodSelect" required>
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Horario</label>
+            <div id="timeslots" class="timeslots"></div>
+          </div>
+
+          <button type="submit" class="btn-primary">Confirmar Cita</button>
+        </form>
+      </section>
+
+      <section id="view-gestion" class="view hidden">
+        <header class="page-header">
+          <h2>Turnos Activos</h2>
+          <p>Lista de turnos pendientes actualmente.</p>
+        </header>
+        <div class="search-row">
+          <input id="searchAppointments" type="search" placeholder="Buscar cliente, servicio o hora..." />
+        </div>
+        <div id="appointmentsList" class="list-grid"></div>
+      </section>
+
+      <section id="view-historial" class="view hidden">
+        <header class="page-header">
+          <h2>Historial Mensual</h2>
+          <p>Registros de citas completadas.</p>
+        </header>
+
+        <div class="actions-row">
+          <button id="downloadReportBtn" type="button" class="btn-secondary">Descargar Reporte PDF</button>
+          <button id="exportUsersExcelBtn" type="button" class="btn-secondary">Descargar usuarios.xlsx</button>
+          <button id="exportTurnosExcelBtn" type="button" class="btn-secondary">Descargar turnos.xlsx</button>
+        </div>
+
+        <div class="glass history-card">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Servicio</th>
+                <th>Duración</th>
+                <th>Barbero</th>
+                <th>Fecha/Hora</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="historyList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-config" class="view hidden">
+        <header class="page-header">
+          <h2>Configuración del negocio</h2>
+          <p>Solo administrador. Edita horarios, barberos, servicios y datos del local.</p>
+        </header>
+
+        <div class="config-grid">
+          <div class="glass config-card config-card-wide">
+            <h3>Datos del local</h3>
+            <div class="form-row">
+              <label for="configBusinessName">Nombre del negocio</label>
+              <input type="text" id="configBusinessName" placeholder="Ej: Barbería SGCUT" />
+            </div>
+            <div class="two-col-row">
+              <div class="form-row">
+                <label for="configOpenTime">Apertura</label>
+                <input type="time" id="configOpenTime" value="09:00" />
+              </div>
+              <div class="form-row">
+                <label for="configCloseTime">Cierre</label>
+                <input type="time" id="configCloseTime" value="18:00" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="configSlotInterval">Duración de cada turno (minutos)</label>
+              <input type="number" id="configSlotInterval" min="15" max="120" step="15" value="30" />
+            </div>
+            <button type="button" id="saveBusinessBtn" class="btn-primary">Guardar datos del local</button>
+          </div>
+
+          <div class="glass config-card">
+            <h3>Barberos</h3>
+            <p class="small-note">Un nombre por línea. Aparecen al agendar citas.</p>
+            <textarea id="configBarbers" rows="6" placeholder="Alex&#10;Nico&#10;Martín"></textarea>
+            <button type="button" id="saveBarbersBtn" class="btn-primary">Guardar barberos</button>
+          </div>
+
+          <div class="glass config-card">
+            <h3>Servicios</h3>
+            <p class="small-note">Formato: id|nombre|duración en minutos (una línea por servicio).</p>
+            <textarea id="configServices" rows="8" placeholder="corte|Corte de cabello|30&#10;barba|Afeitado / Barba|30"></textarea>
+            <button type="button" id="saveServicesBtn" class="btn-primary">Guardar servicios</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="aboutScreen" class="view-fullscreen hidden">
+    <button class="back-btn" id="backFromAbout">&larr; Volver</button>
+    <div class="fullscreen-content">
+      <div class="glass content-card">
+        <h2>Quiénes Somos</h2>
+        <p class="intro-text">SGCUT es una solución innovadora diseñada para modernizar la gestión de salones de belleza y barberías premium.</p>
+        
+        <section class="content-section">
+          <h3>Nuestra Misión</h3>
+          <p>Ofrecer una plataforma digital intuitiva que permita a los propietarios y administradores de salones optimizar la gestión de turnos, mejorar la experiencia del cliente y mantener un control completo del negocio de forma sencilla y profesional.</p>
+        </section>
+
+        <section class="content-section">
+          <h3>Nuestros Valores</h3>
+          <ul class="values-list">
+            <li><strong>Profesionalismo:</strong> Herramientas diseñadas para empresas de clase alta.</li>
+            <li><strong>Eficiencia:</strong> Sistema ágil que ahorra tiempo y optimiza recursos.</li>
+            <li><strong>Confiabilidad:</strong> Datos seguros y acceso desde cualquier dispositivo.</li>
+            <li><strong>Innovación:</strong> Tecnología moderna adaptada a necesidades reales.</li>
+            <li><strong>Atención al Detalle:</strong> Interfaz pulida y funcionalidades intuitivas.</li>
+          </ul>
+        </section>
+
+        <section class="content-section">
+          <h3>¿Por qué elegir SGCUT?</h3>
+          <div class="benefit-grid">
+            <div class="benefit-card glass">
+              <h4>📱 Fácil de Usar</h4>
+              <p>Interfaz intuitiva que requiere mínima capacitación.</p>
+            </div>
+            <div class="benefit-card glass">
+              <h4>☁️ Basado en Web</h4>
+              <p>Acceso desde cualquier navegador, sin instalaciones.</p>
+            </div>
+            <div class="benefit-card glass">
+              <h4>📊 Reportes Inteligentes</h4>
+              <p>Descarga reportes en PDF para análisis detallado.</p>
+            </div>
+            <div class="benefit-card glass">
+              <h4>🔒 Seguro</h4>
+              <p>Datos persistentes en almacenamiento local del navegador.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="howtoScreen" class="view-fullscreen hidden">
+    <button class="back-btn" id="backFromHowto">&larr; Volver</button>
+    <div class="fullscreen-content">
+      <div class="glass content-card">
+        <h2>Cómo Usar SGCUT</h2>
+        <p class="intro-text">Guía paso a paso para aprovechar todas las características de la plataforma.</p>
+
+        <section class="content-section">
+          <h3>1. Registro e inicio de sesión</h3>
+          <div class="step-box">
+            <p>En la pantalla inicial elige <strong>Registrarse</strong> e ingresa:</p>
+            <ul>
+              <li>Nombre completo</li>
+              <li>Número de teléfono</li>
+              <li>Contraseña</li>
+            </ul>
+            <p>Al registrarte entrarás automáticamente. Para volver a entrar usa tu teléfono y contraseña.</p>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <h3>2. Panel de Control (Dashboard)</h3>
+          <div class="step-box">
+            <p>Visualiza:</p>
+            <ul>
+              <li><strong>Citas del Mes:</strong> Total de turnos agendados.</li>
+              <li><strong>Citas Completadas:</strong> Servicios ya finalizados.</li>
+              <li><strong>Calendario Interactivo:</strong> Días disponibles para agendar.</li>
+            </ul>
+            <p>Haz clic en cualquier día del calendario (el local atiende todos los días). La fecha se carga sola en Agendar Cita.</p>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <h3>3. Agendar un Turno</h3>
+          <div class="step-box">
+            <ol>
+              <li>Selecciona una fecha en el calendario (se carga sola en el formulario).</li>
+              <li>Completa el formulario con:
+                <ul>
+                  <li>Servicio y barbero</li>
+                  <li>Periodo (AM/PM) y horario disponible</li>
+                </ul>
+              </li>
+              <li>Haz clic en "Confirmar Cita".</li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <h3>4. Gestionar Turnos Activos</h3>
+          <div class="step-box">
+            <p>Verás solo tus propios turnos agendados.</p>
+            <ul>
+              <li><strong>Buscar:</strong> Filtra por cliente, servicio, hora o fecha.</li>
+              <li><strong>Cancelar:</strong> Cancela un turno que ya no necesites.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <h3>5. Información Importante</h3>
+          <div class="step-box">
+            <ul>
+              <li>El <strong>costo se confirma en el local</strong> al momento del servicio.</li>
+              <li>Los turnos están disponibles de <strong>09:00 a 18:00</strong>.</li>
+              <li>Cada turno ocupa <strong>30 minutos</strong> de tiempo del barbero.</li>
+              <li>Los datos se guardan automáticamente en tu navegador.</li>
+              <li>Tu teléfono queda registrado para identificar tus citas.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <h3>6. Tips Profesionales</h3>
+          <div class="tip-grid">
+            <div class="tip-card glass">
+              <h4>💡 Gestión de Horarios</h4>
+              <p>Finaliza los turnos apenas se completen para que otros clientes puedan reservar esos horarios.</p>
+            </div>
+            <div class="tip-card glass">
+              <h4>💡 Organización</h4>
+              <p>Usa barberos específicos para cada tipo de servicio y mantén consistencia en los precios.</p>
+            </div>
+            <div class="tip-card glass">
+              <h4>💡 Reportes</h4>
+              <p>Descarga reportes mensuales para análisis de ingresos y servicios populares.</p>
+            </div>
+            <div class="tip-card glass">
+              <h4>💡 Disponibilidad</h4>
+              <p>El calendario muestra solo días con slots disponibles para una mejor experiencia.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultModal" class="modal hidden">
+    <div class="modal-overlay" id="resultModalOverlay"></div>
+    <div class="modal-content glass result-modal">
+      <div id="resultModalIcon" class="result-modal-icon success">✓</div>
+      <h2 id="resultModalTitle">¡Listo!</h2>
+      <p id="resultModalSubtitle" class="result-modal-subtitle"></p>
+      <div id="resultModalBody" class="result-modal-body"></div>
+      <p id="resultModalFooter" class="result-modal-footer"></p>
+      <button type="button" class="btn-primary" id="resultModalBtn">Continuar</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
