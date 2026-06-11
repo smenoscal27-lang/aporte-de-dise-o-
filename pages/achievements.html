@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logros — EduQuest Bachillerato</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    .ach-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:20px; }
+    .achievement-card { min-height: 160px; }
+    @media (max-width: 1100px) { .ach-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">🎓</div>
+      <div class="sidebar-logo-text"><span class="sidebar-logo-name">EduQuest</span><span class="sidebar-logo-sub">Bachillerato</span></div>
+    </a>
+    <a href="profile.html" class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sb-user-avatar">🧑‍💻</div>
+      <div><div class="sidebar-user-name" id="sb-user-name">Cargando...</div><div class="sidebar-user-level" id="sb-user-level">Nivel 1</div></div>
+      <div class="sidebar-user-xp" id="sb-user-xp">0 XP</div>
+    </a>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item" data-page="dashboard.html"><span class="nav-item-icon"><i class="fas fa-home"></i></span> Dashboard</a>
+      <a href="profile.html" class="nav-item" data-page="profile.html"><span class="nav-item-icon"><i class="fas fa-user"></i></span> Mi Perfil</a>
+      <div class="sidebar-section-label">Aprender</div>
+      <a href="subjects.html" class="nav-item" data-page="subjects.html"><span class="nav-item-icon"><i class="fas fa-book"></i></span> Materias</a>
+      <a href="games.html" class="nav-item" data-page="games.html"><span class="nav-item-icon"><i class="fas fa-gamepad"></i></span> Juegos Demo</a>
+      <a href="achievements.html" class="nav-item active" data-page="achievements.html"><span class="nav-item-icon"><i class="fas fa-trophy"></i></span> Logros</a>
+      <a href="ranking.html" class="nav-item" data-page="ranking.html"><span class="nav-item-icon"><i class="fas fa-medal"></i></span> Ranking</a>
+      <div class="sidebar-section-label">Sistema</div>
+      <a href="settings.html" class="nav-item" data-page="settings.html"><span class="nav-item-icon"><i class="fas fa-cog"></i></span> Configuración</a>
+      <button class="nav-item" data-logout style="width:100%;text-align:left;background:none;border:none;cursor:pointer;color:inherit"><span class="nav-item-icon"><i class="fas fa-sign-out-alt"></i></span> Cerrar Sesión</button>
+    </nav>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="hamburger-btn" id="hamburger-btn"><i class="fas fa-bars"></i></button><div><div class="topbar-title">Logros</div><div class="topbar-subtitle">Revisa tus insignias y recompensas desbloqueadas</div></div></div>
+      <div class="topbar-right"><div class="topbar-chip xp" id="topbar-xp">⭐ 0 XP</div><div class="topbar-chip streak" id="topbar-streak">🔥 0 días</div></div>
+    </header>
+
+    <div class="page-content">
+      <div class="card" style="margin-bottom:18px">
+        <div class="section-title"><div class="section-icon" style="background:var(--warning-light)">🏆</div>Logros disponibles</div>
+        <p style="color:var(--text-muted);margin:0">Completa quizzes, mantén rachas y acumula XP para desbloquear nuevas recompensas.</p>
+      </div>
+      <div class="ach-grid" id="achievements-grid"></div>
+    </div>
+  </main>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="../js/data.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/gamification.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = EQ_Auth.getUser();
+    if (!user) return;
+    EQ_UI.init(user);
+
+    const grid = document.getElementById('achievements-grid');
+    const unlockedIds = new Set(user.achievements || []);
+
+    EQ_DATA.achievements.forEach((ach, index) => {
+      const unlocked = unlockedIds.has(ach.id);
+      const card = document.createElement('article');
+      card.className = `achievement-card ${unlocked ? 'unlocked' : 'locked'} will-animate`;
+      card.style.animationDelay = `${index * 0.05}s`;
+      card.innerHTML = `
+        <div class="achievement-badge-glow"></div>
+        <span class="achievement-icon">${ach.icon}</span>
+        <div class="achievement-name">${ach.name}</div>
+        <div class="achievement-desc">${ach.desc}</div>
+        <div style="margin-top:12px;font-size:0.75rem;color:${unlocked ? 'var(--success)' : 'var(--text-muted)'};font-weight:700">${unlocked ? 'Desbloqueado' : 'Pendiente por completar'}</div>
+      `;
+      grid.appendChild(card);
+    });
+
+    requestAnimationFrame(() => document.querySelectorAll('.will-animate').forEach(el => el.classList.add('animated')));
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Perfil — EduQuest Bachillerato</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <style>
+    .profile-grid { display:grid; grid-template-columns: 1.1fr 0.9fr; gap:24px; }
+    .mini-stat { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; background:var(--gray-50); border:1px solid var(--border-color); }
+    .mini-stat strong { display:block; font-size:1.1rem; color:var(--text-primary); }
+    .avatar-grid { display:flex; flex-wrap:wrap; gap:10px; }
+    .avatar-chip { width:48px; height:48px; border-radius:999px; border:2px solid transparent; display:grid; place-items:center; font-size:1.3rem; background:var(--card-bg); cursor:pointer; transition:all .2s ease; }
+    .avatar-chip.active, .avatar-chip:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(79,70,229,.18); }
+    @media (max-width: 1100px) { .profile-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">🎓</div>
+      <div class="sidebar-logo-text"><span class="sidebar-logo-name">EduQuest</span><span class="sidebar-logo-sub">Bachillerato</span></div>
+    </a>
+    <a href="profile.html" class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sb-user-avatar">🧑‍💻</div>
+      <div><div class="sidebar-user-name" id="sb-user-name">Cargando...</div><div class="sidebar-user-level" id="sb-user-level">Nivel 1</div></div>
+      <div class="sidebar-user-xp" id="sb-user-xp">0 XP</div>
+    </a>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item" data-page="dashboard.html"><span class="nav-item-icon"><i class="fas fa-home"></i></span> Dashboard</a>
+      <a href="profile.html" class="nav-item active" data-page="profile.html"><span class="nav-item-icon"><i class="fas fa-user"></i></span> Mi Perfil</a>
+      <div class="sidebar-section-label">Aprender</div>
+      <a href="subjects.html" class="nav-item" data-page="subjects.html"><span class="nav-item-icon"><i class="fas fa-book"></i></span> Materias</a>
+      <a href="games.html" class="nav-item" data-page="games.html"><span class="nav-item-icon"><i class="fas fa-gamepad"></i></span> Juegos Demo</a>
+      <a href="achievements.html" class="nav-item" data-page="achievements.html"><span class="nav-item-icon"><i class="fas fa-trophy"></i></span> Logros</a>
+      <a href="ranking.html" class="nav-item" data-page="ranking.html"><span class="nav-item-icon"><i class="fas fa-medal"></i></span> Ranking</a>
+      <div class="sidebar-section-label">Sistema</div>
+      <a href="settings.html" class="nav-item" data-page="settings.html"><span class="nav-item-icon"><i class="fas fa-cog"></i></span> Configuración</a>
+      <button class="nav-item" data-logout style="width:100%;text-align:left;background:none;border:none;cursor:pointer;color:inherit"><span class="nav-item-icon"><i class="fas fa-sign-out-alt"></i></span> Cerrar Sesión</button>
+    </nav>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left"><button class="hamburger-btn" id="hamburger-btn"><i class="fas fa-bars"></i></button><div><div class="topbar-title">Mi Perfil</div><div class="topbar-subtitle">Actualiza tu identidad y revisa tu progreso</div></div></div>
+      <div class="topbar-right"><div class="topbar-chip xp" id="topbar-xp">⭐ 0 XP</div><div class="topbar-chip streak" id="topbar-streak">🔥 0 días</div></div>
+    </header>
+
+    <div class="page-content">
+      <div class="profile-grid">
+        <section class="card">
+          <div class="section-title"><div class="section-icon" style="background:var(--primary-light);color:var(--primary)">👤</div>Datos personales</div>
+          <div style="display:flex;gap:18px;align-items:center;margin-bottom:18px;flex-wrap:wrap">
+            <div id="profile-avatar" style="font-size:64px">🧑‍💻</div>
+            <div>
+              <h2 id="profile-name" style="font-family:var(--font-heading);font-size:1.4rem;font-weight:800;margin:0 0 6px">Estudiante</h2>
+              <p id="profile-email" style="color:var(--text-muted);margin:0">correo@ejemplo.com</p>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+            <div class="mini-stat"><div style="font-size:1.2rem">⭐</div><div><strong id="profile-xp">0 XP</strong><span style="font-size:0.82rem;color:var(--text-muted)">Experiencia total</span></div></div>
+            <div class="mini-stat"><div style="font-size:1.2rem">🏅</div><div><strong id="profile-level">Nivel 1</strong><span style="font-size:0.82rem;color:var(--text-muted)">Rango actual</span></div></div>
+            <div class="mini-stat"><div style="font-size:1.2rem">🔥</div><div><strong id="profile-streak">0 días</strong><span style="font-size:0.82rem;color:var(--text-muted)">Racha</span></div></div>
+            <div class="mini-stat"><div style="font-size:1.2rem">✅</div><div><strong id="profile-quizzes">0</strong><span style="font-size:0.82rem;color:var(--text-muted)">Quizzes completados</span></div></div>
+          </div>
+          <form id="profile-form" class="form-grid" style="display:grid;gap:12px">
+            <div class="form-group"><label class="form-label" for="nameInput">Nombre visible</label><input id="nameInput" class="form-input" type="text" required /></div>
+            <div class="form-group"><label class="form-label">Avatar</label><div class="avatar-grid" id="avatar-grid"></div></div>
+            <button class="btn btn-primary" type="submit">Guardar cambios</button>
+          </form>
+        </section>
+
+        <section class="card">
+          <div class="section-title"><div class="section-icon" style="background:var(--accent-light);color:var(--accent)">🔐</div>Seguridad</div>
+          <form id="password-form" style="display:grid;gap:12px">
+            <div class="form-group"><label class="form-label" for="currentPassword">Contraseña actual</label><input id="currentPassword" class="form-input" type="password" required /></div>
+            <div class="form-group"><label class="form-label" for="newPassword">Nueva contraseña</label><input id="newPassword" class="form-input" type="password" minlength="6" required /></div>
+            <button class="btn btn-ghost" type="submit">Cambiar contraseña</button>
+          </form>
+          <div class="divider" style="margin:18px 0"></div>
+          <button class="btn btn-danger" id="reset-btn" type="button">Restablecer progreso</button>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-top:10px">Esta acción borra XP, rachas y logros del usuario actual.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="../js/data.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/gamification.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = EQ_Auth.getUser();
+    if (!user) return;
+    EQ_UI.init(user);
+
+    let selectedAvatar = user.avatar || 0;
+    const avatarGrid = document.getElementById('avatar-grid');
+    EQ_DATA.avatars.forEach((icon, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'avatar-chip' + (index === selectedAvatar ? ' active' : '');
+      btn.textContent = icon;
+      btn.title = `Avatar ${index + 1}`;
+      btn.addEventListener('click', () => {
+        selectedAvatar = index;
+        [...avatarGrid.children].forEach((child, i) => child.classList.toggle('active', i === index));
+      });
+      avatarGrid.appendChild(btn);
+    });
+
+    const levelInfo = EQ_Gamification.getLevelInfo(user.xp);
+    document.getElementById('profile-avatar').textContent = EQ_DATA.avatars[user.avatar] || '🧑‍💻';
+    document.getElementById('profile-name').textContent = user.name;
+    document.getElementById('profile-email').textContent = user.email;
+    document.getElementById('profile-xp').textContent = `${user.xp} XP`;
+    document.getElementById('profile-level').textContent = `Nivel ${levelInfo.level} · ${levelInfo.name}`;
+    document.getElementById('profile-streak').textContent = `${user.streak || 0} días`;
+    document.getElementById('profile-quizzes').textContent = user.stats?.totalQuizzes || 0;
+    document.getElementById('nameInput').value = user.name;
+
+    document.getElementById('profile-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('nameInput').value.trim();
+      const result = EQ_Auth.updateProfile({ name, avatar: selectedAvatar });
+      if (result.ok) {
+        EQ_UI.showToast({ type: 'success', icon: '✅', title: 'Perfil actualizado', message: 'Tu nombre y avatar se guardaron correctamente.' });
+        setTimeout(() => location.reload(), 700);
+      } else {
+        EQ_UI.showToast({ type: 'error', icon: '❌', title: 'No se pudo actualizar', message: result.error });
+      }
+    });
+
+    document.getElementById('password-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const current = document.getElementById('currentPassword').value;
+      const next = document.getElementById('newPassword').value;
+      const result = EQ_Auth.changePassword(current, next);
+      if (result.ok) {
+        EQ_UI.showToast({ type: 'success', icon: '🔐', title: 'Contraseña cambiada', message: 'Tu contraseña se actualizó correctamente.' });
+        e.target.reset();
+      } else {
+        EQ_UI.showToast({ type: 'error', icon: '❌', title: 'Error', message: result.error });
+      }
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      EQ_UI.confirm('¿Deseas restablecer tu progreso? Se perderán XP, rachas y logros.', () => {
+        EQ_Auth.resetProgress();
+        EQ_UI.showToast({ type: 'warning', icon: '🧹', title: 'Progreso reiniciado', message: 'Tu avance quedó en cero.' });
+        setTimeout(() => location.reload(), 700);
+      });
+    });
+  });
+</script>
+</body>
+</html>

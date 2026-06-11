@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — EduQuest Bachillerato</title>
+  <meta name="description" content="Tu panel de control en EduQuest Bachillerato. XP, niveles, logros y acceso rápido a materias.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <style>
+    .stats-grid     { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .subjects-dash  { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+    .recent-list    { display: flex; flex-direction: column; gap: 12px; }
+    .recent-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-fast);
+    }
+    .recent-item:hover { background: var(--gray-50); transform: translateX(4px); }
+    .recent-icon {
+      width: 40px; height: 40px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .badges-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .badge-chip {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: var(--radius-full);
+      background: var(--warning-light); border: 2px solid var(--warning);
+      font-family: var(--font-heading); font-size: 0.82rem; font-weight: 700; color: #92400E;
+      animation: scaleIn 0.4s var(--transition-bounce);
+    }
+    @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .subjects-dash { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 768px)  { .stats-grid { grid-template-columns: 1fr 1fr; } .subjects-dash { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px)  { .stats-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">🎓</div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-name">EduQuest</span>
+        <span class="sidebar-logo-sub">Bachillerato</span>
+      </div>
+    </a>
+
+    <a href="profile.html" class="sidebar-user">
+      <div class="sidebar-user-avatar" id="sb-user-avatar">🧑‍💻</div>
+      <div>
+        <div class="sidebar-user-name" id="sb-user-name">Cargando...</div>
+        <div class="sidebar-user-level" id="sb-user-level">Nivel 1</div>
+      </div>
+      <div class="sidebar-user-xp" id="sb-user-xp">0 XP</div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item active" data-page="dashboard.html">
+        <span class="nav-item-icon"><i class="fas fa-home"></i></span> Dashboard
+      </a>
+      <a href="profile.html" class="nav-item" data-page="profile.html">
+        <span class="nav-item-icon"><i class="fas fa-user"></i></span> Mi Perfil
+      </a>
+
+      <div class="sidebar-section-label">Aprender</div>
+      <a href="subjects.html" class="nav-item" data-page="subjects.html">
+        <span class="nav-item-icon"><i class="fas fa-book"></i></span> Materias
+      </a>
+      <a href="games.html" class="nav-item" data-page="games.html">
+        <span class="nav-item-icon"><i class="fas fa-gamepad"></i></span> Juegos Demo
+      </a>
+      <a href="achievements.html" class="nav-item" data-page="achievements.html">
+        <span class="nav-item-icon"><i class="fas fa-trophy"></i></span> Logros
+      </a>
+      <a href="ranking.html" class="nav-item" data-page="ranking.html">
+        <span class="nav-item-icon"><i class="fas fa-medal"></i></span> Ranking
+      </a>
+
+      <div class="sidebar-section-label">Sistema</div>
+      <a href="settings.html" class="nav-item" data-page="settings.html">
+        <span class="nav-item-icon"><i class="fas fa-cog"></i></span> Configuración
+      </a>
+      <button class="nav-item" data-logout style="width:100%;text-align:left;background:none;border:none;cursor:pointer;color:inherit">
+        <span class="nav-item-icon"><i class="fas fa-sign-out-alt"></i></span> Cerrar Sesión
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-xp-section">
+        <div class="sidebar-xp-label">
+          <span class="sidebar-xp-text" id="sb-xp-text">Progreso al siguiente nivel</span>
+          <span class="sidebar-xp-val" id="sb-xp-val">0 XP</span>
+        </div>
+        <div class="sidebar-xp-track">
+          <div class="sidebar-xp-fill" id="sb-xp-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger-btn" id="hamburger-btn"><i class="fas fa-bars"></i></button>
+        <div>
+          <div class="topbar-title">Dashboard</div>
+          <div class="topbar-subtitle" id="topbar-greeting">Buenos días 👋</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-chip xp" id="topbar-xp">⭐ 0 XP</div>
+        <div class="topbar-chip streak" id="topbar-streak">🔥 0 días</div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="page-content">
+
+      <!-- Hero greeting -->
+      <div class="card" style="background:linear-gradient(135deg,#0F172A,#1E1B4B);color:white;border:none;margin-bottom:32px;padding:32px 40px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,0.3),transparent);pointer-events:none"></div>
+        <div style="position:absolute;bottom:-60px;left:40%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.2),transparent);pointer-events:none"></div>
+        <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+          <div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em">¡Bienvenido de vuelta!</div>
+            <h1 style="font-family:var(--font-heading);font-size:2rem;font-weight:900;margin-bottom:12px;color:white" id="hero-name">Estudiante</h1>
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+              <div class="level-badge" style="width:auto;padding:6px 16px;border-radius:999px;font-size:0.85rem" id="hero-level-badge">Nivel 1 · Novato 🌱</div>
+              <div class="xp-chip" id="hero-xp-chip">⭐ 0 XP</div>
+            </div>
+            <!-- XP Progress -->
+            <div style="margin-top:16px;max-width:320px">
+              <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(255,255,255,0.5);margin-bottom:6px">
+                <span>Progreso al nivel siguiente</span>
+                <span id="hero-xp-to-next">0 XP restante</span>
+              </div>
+              <div class="progress-track" style="background:rgba(255,255,255,0.1)">
+                <div class="progress-fill" id="hero-progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:5rem;filter:drop-shadow(0 4px 16px rgba(124,58,237,0.4))" id="hero-avatar">🧑‍💻</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:32px">
+        <div class="stat-card will-animate">
+          <div class="stat-card-icon" style="background:var(--primary-light)">🔢</div>
+          <div>
+            <div class="stat-card-value" id="stat-quizzes">0</div>
+            <div class="stat-card-label">Quizzes Completados</div>
+          </div>
+        </div>
+        <div class="stat-card will-animate delay-1">
+          <div class="stat-card-icon" style="background:var(--secondary-light)">✅</div>
+          <div>
+            <div class="stat-card-value" id="stat-accuracy">0%</div>
+            <div class="stat-card-label">Precisión</div>
+          </div>
+        </div>
+        <div class="stat-card will-animate delay-2">
+          <div class="stat-card-icon" style="background:var(--warning-light)">🔥</div>
+          <div>
+            <div class="stat-card-value" id="stat-streak">0</div>
+            <div class="stat-card-label">Días de Racha</div>
+          </div>
+        </div>
+        <div class="stat-card will-animate delay-3">
+          <div class="stat-card-icon" style="background:var(--accent-light)">🏆</div>
+          <div>
+            <div class="stat-card-value" id="stat-achievements">0</div>
+            <div class="stat-card-label">Logros</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subjects -->
+      <div style="margin-bottom:32px">
+        <div class="section-title">
+          <div class="section-icon" style="background:var(--primary-light);color:var(--primary)">📚</div>
+          Acceso Rápido a Materias
+        </div>
+        <div class="subjects-dash" id="subjects-dash"></div>
+      </div>
+
+      <!-- 2-col: Badges + Recent -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px" id="two-col-section">
+        <!-- Badges -->
+        <div class="card">
+          <div class="section-title" style="margin-bottom:16px">
+            <div class="section-icon" style="background:var(--warning-light)">🏅</div>
+            Insignias Recientes
+          </div>
+          <div class="badges-row" id="badges-row">
+            <p style="color:var(--text-muted);font-size:0.88rem">Aún no tienes insignias. ¡Completa un quiz!</p>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="section-title" style="margin-bottom:16px">
+            <div class="section-icon" style="background:var(--primary-light);color:var(--primary)">📊</div>
+            Actividad Reciente
+          </div>
+          <div class="recent-list" id="recent-list">
+            <p style="color:var(--text-muted);font-size:0.88rem">Sin actividad reciente. ¡Juega tu primer quiz!</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<script src="../js/data.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/gamification.js"></script>
+<script src="../js/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const user = EQ_Auth.getUser();
+  if (!user) return;
+
+  EQ_UI.init(user);
+
+  const levelInfo = EQ_Gamification.getLevelInfo(user.xp);
+
+  // Hero
+  document.getElementById('hero-name').textContent = `¡Hola, ${user.name}!`;
+  document.getElementById('hero-avatar').textContent = EQ_DATA.avatars[user.avatar] || '🧑‍💻';
+  document.getElementById('hero-level-badge').textContent = `Nivel ${levelInfo.level} · ${levelInfo.icon} ${levelInfo.name}`;
+  document.getElementById('hero-xp-chip').textContent = `⭐ ${user.xp} XP`;
+  document.getElementById('hero-xp-to-next').textContent = levelInfo.nextLevel ? `${levelInfo.xpToNext} XP restante` : '¡Nivel máximo!';
+
+  // Greeting
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Buenos días' : hour < 18 ? 'Buenas tardes' : 'Buenas noches';
+  document.getElementById('topbar-greeting').textContent = `${greet}, ${user.name.split(' ')[0]} 👋`;
+
+  // Animate XP progress
+  setTimeout(() => {
+    EQ_UI.animateProgress(document.getElementById('hero-progress-fill'), levelInfo.progress, 300);
+  }, 200);
+
+  // Stats counters
+  setTimeout(() => {
+    EQ_UI.animateCounter(document.getElementById('stat-quizzes'), user.stats.totalQuizzes || 0);
+    document.getElementById('stat-accuracy').textContent = EQ_Gamification.getAccuracy(user) + '%';
+    EQ_UI.animateCounter(document.getElementById('stat-streak'), user.streak || 0);
+    EQ_UI.animateCounter(document.getElementById('stat-achievements'), user.achievements?.length || 0);
+  }, 400);
+
+  // Subjects grid
+  const subjectsDash = document.getElementById('subjects-dash');
+  Object.values(EQ_DATA.subjects).forEach(sub => {
+    const progress = user.stats.progressBySubject[sub.id] || 0;
+    const card = document.createElement('a');
+    card.href = `subject-detail.html?subject=${sub.id}`;
+    card.className = 'subject-card will-animate';
+    card.innerHTML = `
+      <div class="subject-card-banner" style="background:${sub.gradient}">
+        <span class="subject-card-icon">${sub.icon}</span>
+      </div>
+      <div class="subject-card-body">
+        <div class="subject-card-title">${sub.name}</div>
+        <div class="progress-track" style="margin-bottom:8px">
+          <div class="progress-fill" style="width:${Math.min(progress,100).toFixed(0)}%;background:${sub.gradient.includes('#') ? sub.gradient : 'var(--primary)'}"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-muted)">
+          <span>${Math.min(progress,100).toFixed(0)}% completado</span>
+          <span>${user.stats.xpBySubject[sub.id] || 0} XP</span>
+        </div>
+      </div>
+    `;
+    subjectsDash.appendChild(card);
+  });
+
+  // Badges
+  const badgesRow = document.getElementById('badges-row');
+  if (user.achievements?.length > 0) {
+    badgesRow.innerHTML = '';
+    user.achievements.slice(0, 6).forEach(achId => {
+      const ach = EQ_DATA.achievements.find(a => a.id === achId);
+      if (!ach) return;
+      const chip = document.createElement('div');
+      chip.className = 'badge-chip';
+      chip.textContent = `${ach.icon} ${ach.name}`;
+      badgesRow.appendChild(chip);
+    });
+  }
+
+  // Recent activity
+  const recentList = document.getElementById('recent-list');
+  if (user.history?.length > 0) {
+    recentList.innerHTML = '';
+    user.history.slice(0, 5).forEach(entry => {
+      const sub = EQ_DATA.subjects[entry.subject];
+      const date = new Date(entry.date).toLocaleDateString('es', { day:'2-digit', month:'short' });
+      const item = document.createElement('div');
+      item.className = 'recent-item';
+      item.innerHTML = `
+        <div class="recent-icon" style="background:${sub?.gradient || 'var(--primary-light)'}">
+          ${sub?.icon || '📚'}
+        </div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.9rem;color:var(--text-primary)">${entry.subjectName || sub?.name}</div>
+          <div style="font-size:0.78rem;color:var(--text-muted)">${entry.correct}/${entry.total} correctas · ${date}</div>
+        </div>
+        <div class="xp-chip" style="font-size:0.75rem">+${entry.xpGained || 0} XP</div>
+      `;
+      recentList.appendChild(item);
+    });
+  }
+
+  // Responsive two-col
+  if (window.innerWidth < 768) {
+    document.getElementById('two-col-section').style.gridTemplateColumns = '1fr';
+  }
+
+  // Stagger animations
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.will-animate').forEach((el, i) => {
+      el.style.animationDelay = i * 0.06 + 's';
+      el.classList.add('animated');
+    });
+  });
+});
+</script>
+</body>
+</html>

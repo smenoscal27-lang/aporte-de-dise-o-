@@ -1,0 +1,163 @@
+<!-- ── SHARED SIDEBAR PARTIAL (include via JS) ── -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión — EduQuest Bachillerato</title>
+  <meta name="description" content="Inicia sesión en EduQuest Bachillerato y continúa tu aventura educativa.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/animations.css">
+</head>
+<body>
+  <div class="auth-page">
+    <!-- BG Orbs -->
+    <div class="hero-bg-orbs">
+      <div class="orb orb-1" style="opacity:0.2"></div>
+      <div class="orb orb-2" style="opacity:0.15"></div>
+    </div>
+
+    <div class="auth-card animate-scale-in">
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div class="landing-nav-logo-icon" style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1.4rem">🎓</div>
+        <div>
+          <div style="font-family:var(--font-heading);font-size:1.2rem;font-weight:800;color:white">EduQuest</div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase">Bachillerato</div>
+        </div>
+      </div>
+
+      <h1 class="auth-title">¡Bienvenido de vuelta!</h1>
+      <p class="auth-subtitle">Inicia sesión para continuar tu aventura educativa.</p>
+
+      <form class="auth-form" id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="login-email">
+            <i class="fas fa-envelope" style="margin-right:6px"></i>Correo Electrónico
+          </label>
+          <input type="email" id="login-email" class="form-input" placeholder="tu@correo.com" autocomplete="email" required>
+          <span class="form-error" id="email-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">
+            <i class="fas fa-lock" style="margin-right:6px"></i>Contraseña
+          </label>
+          <div class="input-wrapper">
+            <input type="password" id="login-password" class="form-input" placeholder="Tu contraseña" autocomplete="current-password" required>
+            <button type="button" class="input-toggle" id="toggle-pwd" aria-label="Mostrar contraseña">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <span class="form-error" id="pwd-error"></span>
+        </div>
+
+        <div id="login-error" style="display:none" class="form-error" style="padding:12px;background:var(--danger-light);border-radius:var(--radius-md);text-align:center"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn">
+          <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+        </button>
+      </form>
+
+      <div class="auth-divider">o</div>
+
+      <!-- Demo -->
+      <button class="btn btn-ghost btn-full" id="demo-btn" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.12)">
+        <i class="fas fa-play-circle"></i> Probar Demo
+      </button>
+
+      <p class="auth-link">
+        ¿No tienes cuenta? <a href="register.html">Regístrate gratis 🚀</a>
+      </p>
+      <p class="auth-link" style="margin-top:8px">
+        <a href="../index.html" style="color:rgba(255,255,255,0.3)"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+      </p>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/gamification.js"></script>
+  <script src="../js/ui.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      EQ_UI.loadTheme();
+
+      // Toggle password visibility
+      document.getElementById('toggle-pwd').addEventListener('click', function() {
+        const input = document.getElementById('login-password');
+        const icon  = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+      });
+
+      // Form submit
+      document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn   = document.getElementById('login-btn');
+        const email = document.getElementById('login-email').value;
+        const pwd   = document.getElementById('login-password').value;
+        const errEl = document.getElementById('login-error');
+
+        btn.classList.add('loading');
+        errEl.style.display = 'none';
+
+        // Simulate async
+        await new Promise(r => setTimeout(r, 500));
+
+        const result = EQ_Auth.login(email, pwd);
+        btn.classList.remove('loading');
+
+        if (result.ok) {
+          EQ_UI.showToast({ type:'success', title:'¡Bienvenido!', message:`Hola, ${result.user.name} 👋` });
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+        } else {
+          errEl.textContent = result.error;
+          errEl.style.cssText = 'display:block;padding:12px;background:var(--danger-light);border-radius:12px;text-align:center;color:var(--danger);font-size:0.88rem;margin-top:4px';
+        }
+      });
+
+      // Demo account
+      document.getElementById('demo-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('demo-btn');
+        btn.classList.add('loading');
+        btn.textContent = 'Creando demo...';
+
+        await new Promise(r => setTimeout(r, 400));
+
+        // Create demo account if not exists
+        const demoEmail = 'demo@eduquest.com';
+        let result = EQ_Auth.login(demoEmail, 'demo123');
+        if (!result.ok) {
+          EQ_Auth.register('Estudiante Demo', demoEmail, 'demo123', 0);
+          result = EQ_Auth.login(demoEmail, 'demo123');
+        }
+
+        if (result.ok) {
+          window.location.href = 'dashboard.html';
+        }
+      });
+
+      // Input validation UX
+      ['login-email','login-password'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function() {
+          this.classList.remove('error');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
